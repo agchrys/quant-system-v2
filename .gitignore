@@ -50,6 +50,11 @@ logs/*.log
 # Data cache (may contain downloaded data)
 data/cache/
 
+# HK stock data cache (keep directory structure, ignore downloaded data)
+data/hk_cache/daily/
+data/hk_cache/*.parquet
+data/hk_cache/*.csv
+
 # Reports (generated files)
 reports/*.csv
 reports/*.png
