@@ -439,7 +439,7 @@ def run_single(params: dict, verbose=True) -> dict:
         logger.info(f"胜率:{result['win_rate']*100:.1f}% 年化:{result['annual_return']*100:.1f}% "
                      f"回撤:{result['max_drawdown']*100:.1f}% 交易:{result['total_trades']}")
 
-    return result
+    return result, trades, values
 
 
 def grid_search(param_grid: dict, top_n: int = 5):
@@ -459,7 +459,7 @@ def grid_search(param_grid: dict, top_n: int = 5):
         params.setdefault('train_end', '20211231')
         params.setdefault('val_end', '20221231')
 
-        result = run_single(params, verbose=False)
+        result, _, _ = run_single(params, verbose=False)
         result['params'] = params
         best_results.append(result)
 
@@ -485,9 +485,9 @@ def main():
             'score_threshold': 0.3, 'atr_multiplier': 2.5,
             'take_profit_ratio': 4.0, 'position_sizing': 0.20,
         }
-        result = run_single(params, verbose=True)
+        result, trades, values = run_single(params, verbose=True)
         logger.success(f"完成: 年化={result['annual_return']*100:.1f}%")
-        return
+        return result, trades, values
 
     # 网格搜索参数空间（精简为 36 组）
     param_grid = {
