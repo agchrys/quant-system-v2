@@ -50,9 +50,6 @@ logs/*.log
 # Data cache (may contain downloaded data)
 data/cache/
 
-# HK stock individual daily cache (redundant, built from combined parquet)
-data/hk_cache/daily/
-
 # Reports (generated files)
 reports/*.csv
 reports/*.png
