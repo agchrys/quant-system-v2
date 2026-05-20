@@ -1,0 +1,163 @@
+# ============================================================
+# Quant-System Personal Edition — 全局配置
+# ============================================================
+
+# ---- 版本 ----
+version: "1.0.0"
+version_history:
+  - "1.0.0": "初始版本"
+
+# ---- 数据配置 ----
+data:
+  start_date: "2020-01-01"
+  end_date: "2025-12-31"
+  stock_universe: "沪深300"            # 选股池: 沪深300 / 中证500 / 全A
+  data_source: "akshare"               # akshare / tushare / local
+  cache_dir: "./data/cache"
+  
+  # 数据频率
+  frequencies:
+    daily: true
+    minute: false
+  
+  # 财务数据更新频率
+  financial_update: "quarterly"
+
+# ---- 因子配置 ----
+factors:
+  # 因子分组权重
+  groups:
+    momentum: 0.25      # 动量因子
+    reversal: 0.10      # 反转因子
+    volatility: 0.10    # 波动率因子
+    liquidity: 0.10     # 流动性因子
+    value: 0.15         # 估值因子
+    growth: 0.15        # 成长因子
+    quality: 0.10       # 质量因子
+    sentiment: 0.05     # 情绪因子
+  
+  # 因子处理
+  processing:
+    winsorize: true
+    winsorize_method: "mad"            # mad / percentile
+    winsorize_std: 5
+    standardize: true
+    standardize_method: "zscore"       # zscore / rank
+    neutralize:
+      industry: true
+      market_cap: true
+    fillna: "median"                   # median / mean / zero
+
+# ---- 模型配置 ----
+model:
+  type: "lightgbm"
+  task: "ranking"                      # ranking / regression / classification
+  features: "all"                      # all / top_k / auto
+  
+  lightgbm:
+    objective: "lambdarank"
+    metric: "ndcg"
+    ndcg_eval_at: [5, 10, 20]
+    num_leaves: 31
+    learning_rate: 0.05
+    n_estimators: 500
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_alpha: 0.1
+    reg_lambda: 0.1
+    min_child_samples: 50
+    early_stopping_rounds: 50
+    verbosity: -1
+  
+  # 训练配置
+  training:
+    train_start: "2020-01-01"
+    train_end: "2022-12-31"
+    val_start: "2023-01-01"
+    val_end: "2023-12-31"
+    test_start: "2024-01-01"
+    test_end: "2025-12-31"
+    cv_folds: 5
+
+# ---- 组合管理 ----
+portfolio:
+  max_positions: 20                     # 最大持仓数量
+  max_position_weight: 0.10             # 单股最大权重
+  max_industry_weight: 0.30            # 单行业最大权重
+  target_volatility: 0.15              # 目标年化波动率
+  rebalance_frequency: "weekly"       # 调仓频率: daily / weekly / monthly
+  
+  # 优化方法
+  optimization:
+    method: "risk_parity"             # risk_parity / mean_variance / equal_weight
+    risk_aversion: 2.0
+
+# ---- 风控 ----
+risk:
+  # 个股止损
+  stop_loss:
+    enabled: true
+    loss_pct: 0.03                     # 单笔亏损 3% 止损
+    time_stop_days: 5                  # 买入后 N 日不涨减仓
+    time_stop_pct: 0.0                 # 时间止损涨幅阈值
+  
+  # 组合回撤控制
+  drawdown:
+    enabled: true
+    level1:                            # 回撤 5%
+      threshold: 0.05
+      reduce_to: 0.60
+    level2:                            # 回撤 7%
+      threshold: 0.07
+      reduce_to: 0.30
+    level3:                            # 回撤 10%
+      threshold: 0.10
+      reduce_to: 0.00                  # 清仓
+      cooldown_days: 3
+  
+  # 波动率控制
+  vol_target:
+    enabled: true
+    annual_target: 0.12
+    lookback_days: 60
+    max_leverage: 1.0
+
+# ---- 回测配置 ----
+backtest:
+  initial_capital: 1000000             # 初始资金 100 万
+  commission_rate: 0.00015             # 佣金万 1.5
+  stamp_duty_rate: 0.001               # 印花税千 1
+  min_commission: 5.0                  # 最低佣金 5 元
+  slippage: 0.001                      # 滑点 0.1%
+  market_impact: 0.001                 # 冲击成本 0.1%
+
+# ---- 自迭代配置 ----
+iteration:
+  enabled: true
+  max_iterations: 50                   # 最大迭代次数
+  improvement_threshold: 0.01          # 胜率或年化提升阈值
+  search_method: "grid"                # grid / random / bayesian
+  search_space:
+    learning_rate: [0.01, 0.03, 0.05, 0.08, 0.1]
+    num_leaves: [15, 31, 63, 127]
+    subsample: [0.6, 0.7, 0.8, 0.9]
+    colsample_bytree: [0.6, 0.7, 0.8, 0.9]
+    reg_alpha: [0.0, 0.01, 0.1, 1.0]
+    reg_lambda: [0.0, 0.01, 0.1, 1.0]
+  metric_target:
+    win_rate: 0.60                     # 目标胜率 60%
+    annual_return: 0.20                # 目标年化 20%
+    max_drawdown: 0.12                 # 目标最大回撤 <12%
+
+# ---- 策略插件配置 ----
+strategies:
+  v8_15:
+    enabled: true
+    sample_size: 500
+    random_seed: 42
+
+# ---- 日志 ----
+logging:
+  level: "INFO"
+  file: "./logs/quant_system.log"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"

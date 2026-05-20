@@ -1,0 +1,31 @@
+# ============================================================
+# Quant-System Personal Edition — 依赖清单
+# 安装: pip install -r requirements.txt
+# ============================================================
+
+# ---- 核心数据处理 ----
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.10.0
+
+# ---- 数据采集 ----
+# pip install akshare  # 免费 A 股数据源
+# pip install tushare  # 备用数据源（需 token）
+# pandas-datareader    # 宏观数据
+
+# ---- 机器学习 ----
+lightgbm>=4.0.0
+scikit-learn>=1.2.0
+
+# ---- 优化 ----
+pyportfolioopt>=1.5.0    # 组合优化
+
+# ---- 可视化与报告 ----
+matplotlib>=3.6.0
+seaborn>=0.12.0
+tabulate>=0.9.0           # 表格输出
+
+# ---- 工具 ----
+pyyaml>=6.0
+loguru>=0.7.0             # 日志
+tqdm>=4.65.0              # 进度条
