@@ -492,11 +492,12 @@ def main():
     # 网格搜索参数空间（精简为 36 组）
     param_grid = {
         'max_hold_days': [10, 12, 15],
-        'atr_multiplier': [2.0, 2.5],
-        'score_threshold': [0.25, 0.30],
-        'max_positions': [4, 5, 6],
+        'atr_multiplier': [2.0, 2.5, 3.0],
+        'score_threshold': [0.25, 0.30, 0.35],
+        'max_positions': [5],
+        'take_profit_ratio': [4.0],
     }
-    # 总组合: 3*2*2*3 = 36 组
+    # 总组合: 3*3*3 = 27 组
 
     best = grid_search(param_grid, top_n=10)
     print("\n" + "=" * 80)
@@ -507,7 +508,8 @@ def main():
         parts = [f"年化:{r['annual_return']*100:5.1f}%", f"胜率:{r['win_rate']*100:4.1f}%",
                  f"回撤:{r['max_drawdown']*100:5.1f}%", f"交易:{r['total_trades']:4d}"]
         param_parts = [f"hold={p.get('max_hold_days','?')}", f"atr={p.get('atr_multiplier','?')}",
-                       f"score={p.get('score_threshold','?')}", f"pos={p.get('max_positions','?')}"]
+                       f"th={p.get('score_threshold','?')}", f"pos={p.get('max_positions','?')}",
+                       f"tp={p.get('take_profit_ratio','?')}"]
         print(f"{i+1}. {' '.join(parts)} | {' '.join(param_parts)}")
 
     print(f"\n最优参数: {best[0]['params']}")
